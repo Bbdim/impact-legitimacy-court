@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impact Legitimacy Court</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/genlayer-js@latest/dist/index.umd.js"></script>
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: rgba(255,255,255,0.03);
+    --border: rgba(255,255,255,0.07);
+    --blue: #38bdf8;
+    --indigo: #6366f1;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --text: #fff;
+    --muted: rgba(255,255,255,0.45);
+    --subtle: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    font-family: 'Syne', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56,189,248,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 90% 80%, rgba(99,102,241,0.05) 0%, transparent 60%);
+  }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 32px; border-bottom: 1px solid var(--border);
+    background: rgba(8,12,20,0.85); backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
+  .logo-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--blue), var(--indigo));
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+  }
+  .logo-text { font-size: 15px; font-weight: 700; color: var(--text); }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-btn {
+    padding: 7px 16px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 500; font-family: 'Syne', sans-serif;
+    background: transparent; color: var(--muted); transition: all 0.2s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: rgba(56,189,248,0.1); color: var(--blue);
+  }
+  .live-badge {
+    padding: 5px 12px; border-radius: 20px;
+    background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);
+    font-size: 11px; color: var(--green); font-family: 'DM Mono', monospace; letter-spacing: 0.5px;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* HOME */
+  .hero { text-align: center; padding: 80px 0 56px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 16px; border-radius: 20px; margin-bottom: 28px;
+    background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2);
+    font-size: 12px; color: var(--blue); letter-spacing: 0.5px;
+  }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 68px); font-weight: 800;
+    line-height: 1.05; letter-spacing: -2px; margin-bottom: 20px;
+    background: linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.45));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p { font-size: 17px; color: var(--muted); max-width: 480px; margin: 0 auto 36px; line-height: 1.7; }
+  .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    padding: 11px 22px; border-radius: 10px; border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--blue), var(--indigo));
+    color: #fff; font-size: 13px; font-weight: 600; font-family: 'Syne', sans-serif;
+    letter-spacing: 0.3px; transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-ghost {
+    padding: 11px 22px; border-radius: 10px; cursor: pointer;
+    background: transparent; border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500;
+    font-family: 'Syne', sans-serif; transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 56px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; text-align: center;
+  }
+  .stat-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; font-family: 'DM Mono', monospace; }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* HOW IT WORKS */
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 24px; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; margin-bottom: 56px; }
+  .step-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; position: relative; overflow: hidden;
+  }
+  .step-num-bg {
+    position: absolute; top: 12px; right: 16px;
+    font-size: 40px; font-weight: 800; color: rgba(255,255,255,0.04);
+    font-family: 'DM Mono', monospace;
+  }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 8px; margin-bottom: 12px;
+    background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--blue); font-family: 'DM Mono', monospace; font-weight: 600;
+  }
+  .step-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .step-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* CARD */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+
+  /* VERDICT ROW */
+  .verdict-row {
+    display: flex; align-items: center; gap: 16px; padding: 16px 20px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; cursor: pointer; transition: all 0.2s; margin-bottom: 10px;
+  }
+  .verdict-row:hover { background: rgba(255,255,255,0.05); }
+  .verdict-icon {
+    width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .verdict-info { flex: 1; min-width: 0; }
+  .verdict-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .verdict-claim { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .verdict-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .verdict-score { font-size: 18px; font-weight: 700; font-family: 'DM Mono', monospace; min-width: 32px; text-align: right; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+    text-transform: uppercase; font-family: 'DM Mono', monospace;
+  }
+
+  /* SUBMIT FORM */
+  .form-wrap { max-width: 600px; margin: 60px auto; }
+  .form-title { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+  .form-subtitle { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 32px; }
+  .form-label {
+    display: block; font-size: 11px; color: var(--muted);
+    margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.8px;
+  }
+  .form-input, .form-textarea {
+    width: 100%; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; color: var(--text); font-size: 14px;
+    font-family: 'Syne', sans-serif; outline: none; transition: border-color 0.2s;
+    margin-bottom: 20px;
+  }
+  .form-input:focus, .form-textarea:focus { border-color: rgba(56,189,248,0.3); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-input::placeholder, .form-textarea::placeholder { color: rgba(255,255,255,0.2); }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .tag {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-size: 12px;
+    cursor: pointer; font-family: 'Syne', sans-serif; transition: all 0.2s;
+  }
+  .tag.selected { border-color: var(--blue); background: rgba(56,189,248,0.1); color: var(--blue); }
+  .submit-btn {
+    width: 100%; padding: 14px; border-radius: 10px; border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--blue), var(--indigo));
+    color: #fff; font-size: 14px; font-weight: 600; font-family: 'Syne', sans-serif;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity 0.2s;
+  }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .spinner {
+    width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* SUCCESS STATE */
+  .success-box { text-align: center; padding: 48px 32px; }
+  .success-icon {
+    width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 20px;
+    background: rgba(16,185,129,0.1); border: 2px solid rgba(16,185,129,0.3);
+    display: flex; align-items: center; justify-content: center; font-size: 28px;
+  }
+  .success-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+  .success-desc { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 28px; }
+  .case-id {
+    padding: 12px 20px; border-radius: 10px; margin-bottom: 24px;
+    background: rgba(56,189,248,0.06); border: 1px solid rgba(56,189,248,0.15);
+    font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace;
+  }
+  .status-box {
+    padding: 12px 20px; border-radius: 10px; margin-bottom: 16px;
+    background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2);
+    font-size: 12px; color: var(--amber); font-family: 'DM Mono', monospace;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* HALL */
+  .hall-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .hall-sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .filters { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .filter-btn {
+    padding: 7px 18px; border-radius: 20px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-size: 12px;
+    cursor: pointer; font-weight: 500; font-family: 'Syne', sans-serif; transition: all 0.2s;
+  }
+  .empty-state { text-align: center; padding: 48px; color: var(--muted); font-size: 14px; }
+  .loading-state { text-align: center; padding: 48px; }
+  .loading-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 12px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); animation: pulse 1.2s ease infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,100%{opacity:0.3;transform:scale(0.8)} 50%{opacity:1;transform:scale(1)} }
+
+  /* VERDICT DETAIL */
+  .back-btn {
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    font-size: 13px; margin-bottom: 24px; padding: 0; display: flex;
+    align-items: center; gap: 6px; font-family: 'Syne', sans-serif;
+  }
+  .back-btn:hover { color: var(--text); }
+  .verdict-header { display: flex; align-items: flex-start; gap: 20px; }
+  .score-ring-wrap { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
+  .score-ring-wrap svg { transform: rotate(-90deg); }
+  .score-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .score-num { font-size: 20px; font-weight: 700; font-family: 'DM Mono', monospace; }
+  .score-lbl { font-size: 9px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .verdict-meta-info { flex: 1; }
+  .verdict-detail-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .verdict-detail-claim { color: var(--muted); font-size: 14px; margin-bottom: 12px; line-height: 1.5; font-style: italic; }
+  .verdict-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .verdict-tag {
+    padding: 2px 10px; border-radius: 12px;
+    background: var(--subtle); border: 1px solid rgba(255,255,255,0.08);
+    font-size: 11px; color: var(--muted);
+  }
+  .summary-box { border-radius: 12px; padding: 20px; margin: 20px 0; }
+  .summary-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; font-family: 'DM Mono', monospace; }
+  .summary-text { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.75; }
+  .hash-box {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px;
+    border-radius: 10px; background: var(--surface); border: 1px solid var(--border);
+    font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'DM Mono', monospace;
+    margin-top: 20px;
+  }
+  .contract-info {
+    padding: 12px 16px; border-radius: 10px; margin-top: 12px;
+    background: rgba(56,189,248,0.04); border: 1px solid rgba(56,189,248,0.1);
+    font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* SECTION PADDING */
+  .section { padding: 48px 0; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    nav { padding: 16px; }
+    .stats { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 36px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" onclick="showPage('home')">
+    <div class="logo-icon">⚖</div>
+    <span class="logo-text">ImpactCourt</span>
+  </a>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showPage('home')">Home</button>
+    <button class="nav-btn" onclick="showPage('hall')">Hall of Verdicts</button>
+    <button class="nav-btn" onclick="showPage('submit')">Submit Project</button>
+  </div>
+  <div class="live-badge">● LIVE ON GENLAYER</div>
+</nav>
+
+<div class="container">
+
+  <!-- HOME PAGE -->
+  <div id="page-home" class="page active">
+    <div class="hero">
+      <div class="hero-badge">✦ Powered by GenLayer Intelligent Contracts</div>
+      <h1>Is Their Impact<br>Actually Real?</h1>
+      <p>Submit any Web3 impact project. Our AI investigates on-chain activity, social proof, and real-world data — then delivers a trustless verdict.</p>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="showPage('submit')">Submit a Project →</button>
+        <button class="btn-ghost" onclick="showPage('hall')">View Verdicts</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card"><div class="stat-value" style="color:var(--blue)" id="stat-total">—</div><div class="stat-label">Projects Judged</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:var(--red)" id="stat-fraud">—</div><div class="stat-label">Fraud Detected</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:var(--green)" id="stat-verified">—</div><div class="stat-label">Verified Projects</div></div>
+    </div>
+
+    <h2 class="section-title">How It Works</h2>
+    <div class="steps">
+      <div class="step-card"><div class="step-num-bg">01</div><div class="step-num">01</div><div class="step-title">Submit Project</div><div class="step-desc">Enter the project name, wallet, website, and impact claims</div></div>
+      <div class="step-card"><div class="step-num-bg">02</div><div class="step-num">02</div><div class="step-title">AI Investigates</div><div class="step-desc">GenLayer Intelligent Contract fetches on-chain data, socials, and web sources</div></div>
+      <div class="step-card"><div class="step-num-bg">03</div><div class="step-num">03</div><div class="step-title">Verdict Issued</div><div class="step-desc">Multi-AI consensus scores the project across dimensions</div></div>
+      <div class="step-card"><div class="step-num-bg">04</div><div class="step-num">04</div><div class="step-title">Stored On-Chain</div><div class="step-desc">The verdict is immutable — visible to the world forever</div></div>
+    </div>
+
+    <div style="margin-bottom:24px;display:flex;justify-content:space-between;align-items:center">
+      <h2 class="section-title" style="margin:0">Recent Verdicts</h2>
+      <button class="btn-ghost" style="padding:7px 16px;font-size:12px" onclick="showPage('hall')">View all →</button>
+    </div>
+    <div id="home-verdicts"><div class="loading-state"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div style="color:var(--muted);font-size:13px">Loading verdicts from chain...</div></div></div>
+    <div class="contract-info">🔗 Contract: <span id="contract-addr-display">0xFf...b1D3</span> · GenLayer Testnet Bradbury</div>
+  </div>
+
+  <!-- SUBMIT PAGE -->
+  <div id="page-submit" class="page">
+    <div class="form-wrap">
+      <h2 class="form-title">Submit a Project</h2>
+      <p class="form-subtitle">The AI will investigate on-chain data, social proof, and web sources. Verdicts are permanent and public.</p>
+      <div class="card" id="submit-form-card">
+        <div>
+          <label class="form-label">Project Name *</label>
+          <input class="form-input" id="f-name" placeholder="e.g. GreenChain Foundation" />
+        </div>
+        <div>
+          <label class="form-label">Website URL *</label>
+          <input class="form-input" id="f-website" placeholder="https://..." />
+        </div>
+        <div>
+          <label class="form-label">Impact Claim *</label>
+          <textarea class="form-textarea" id="f-claim" placeholder="What do they claim to have achieved?"></textarea>
+        </div>
+        <div>
+          <label class="form-label">Category</label>
+          <div class="tags">
+            <button class="tag" onclick="selectTag(this)">Climate</button>
+            <button class="tag" onclick="selectTag(this)">Education</button>
+            <button class="tag" onclick="selectTag(this)">Health</button>
+            <button class="tag" onclick="selectTag(this)">ReFi</button>
+            <button class="tag" onclick="selectTag(this)">DAO</button>
+            <button class="tag" onclick="selectTag(this)">DeSci</button>
+            <button class="tag" onclick="selectTag(this)">Other</button>
+          </div>
+        </div>
+        <button class="submit-btn" id="submit-btn" onclick="submitProject()">
+          Submit for Investigation →
+        </button>
+        <div id="submit-status" style="margin-top:12px;display:none"></div>
+      </div>
+      <div class="card success-box" id="submit-success" style="display:none">
+        <div class="success-icon">✦</div>
+        <h3 class="success-title">Submitted Successfully</h3>
+        <p class="success-desc">Your project has been queued. The GenLayer Intelligent Contract will investigate and issue a verdict. This may take a few minutes.</p>
+        <div class="case-id" id="success-case-id">Case ID: ILC-XXXXXX</div>
+        <div class="status-box"><div class="spinner"></div> Investigation in progress — check Hall of Verdicts shortly</div>
+        <button class="btn-primary" onclick="showPage('hall')">View Hall of Verdicts →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HALL PAGE -->
+  <div id="page-hall" class="page">
+    <div class="section">
+      <div class="hall-header">
+        <h2 class="section-title" style="margin:0">Hall of Verdicts</h2>
+        <button class="btn-ghost" style="padding:7px 16px;font-size:12px" onclick="loadVerdicts()">↻ Refresh</button>
+      </div>
+      <p class="hall-sub">All verdicts are permanent and publicly verifiable on GenLayer.</p>
+      <div class="filters">
+        <button class="filter-btn" style="border-color:var(--blue);color:var(--blue);background:rgba(56,189,248,0.1)" onclick="filterVerdicts('All', this)">All</button>
+        <button class="filter-btn" onclick="filterVerdicts('Verified', this)">✦ Verified</button>
+        <button class="filter-btn" onclick="filterVerdicts('Suspicious', this)">◈ Suspicious</button>
+        <button class="filter-btn" onclick="filterVerdicts('Fraud', this)">✕ Fraud</button>
+      </div>
+      <div id="hall-verdicts"><div class="loading-state"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div style="color:var(--muted);font-size:13px">Loading from GenLayer...</div></div></div>
+    </div>
+  </div>
+
+  <!-- VERDICT DETAIL PAGE -->
+  <div id="page-verdict" class="page">
+    <div class="section" style="max-width:720px;margin:0 auto">
+      <button class="back-btn" onclick="showPage('hall')">← Back to Hall of Verdicts</button>
+      <div id="verdict-detail-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// CONFIG — Update CONTRACT_ADDRESS with your deployed address
+// ============================================================
+const CONTRACT_ADDRESS = '0xFf6F8D726a325a3268FFabA8403D00EDb39Db1D3';
+const RPC_URL = 'https://studio.genlayer.com/api';
+
+// ============================================================
+// RATING CONFIG
+// ============================================================
+const RATING = {
+  Verified:   { color: '#10b981', bg: 'rgba(16,185,129,0.1)',  border: 'rgba(16,185,129,0.3)',  icon: '✦' },
+  Suspicious: { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.3)',  icon: '◈' },
+  Fraud:      { color: '#ef4444', bg: 'rgba(239,68,68,0.1)',  border: 'rgba(239,68,68,0.3)',   icon: '✕' },
+};
+function getRating(r) { return RATING[r] || RATING['Suspicious']; }
+
+// ============================================================
+// GENLAYER CLIENT
+// ============================================================
+let glClient = null;
+
+async function getClient() {
+  if (glClient) return glClient;
+  try {
+    const { createClient, createAccount } = window.genlayerJs || {};
+    if (!createClient) {
+      console.warn('GenLayer JS not loaded, using direct RPC');
+      return null;
+    }
+    const account = createAccount();
+    glClient = createClient({ chain: { id: 42069, rpcUrl: RPC_URL }, account });
+    return glClient;
+  } catch(e) {
+    console.error('Client init error:', e);
+    return null;
+  }
+}
+
+// ============================================================
+// READ VERDICTS FROM CHAIN
+// ============================================================
+async function fetchVerdictsFromChain() {
+  try {
+    const response = await fetch(RPC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0', id: 1,
+        method: 'gen_call',
+        params: [{
+          to: CONTRACT_ADDRESS,
+          data: { function: 'get_verdicts', args: [] }
+        }, 'latest']
+      })
+    });
+    const data = await response.json();
+    if (data.result) {
+      const raw = typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+      if (Array.isArray(raw)) {
+        return raw.map(item => {
+          try { return typeof item === 'string' ? JSON.parse(item) : item; }
+          catch(e) { return null; }
+        }).filter(Boolean);
+      }
+    }
+  } catch(e) {
+    console.error('Fetch error:', e);
+  }
+  return null;
+}
+
+// ============================================================
+// SAMPLE DATA (fallback if chain not reachable)
+// ============================================================
+const SAMPLE = [
+  { project: 'Gitcoin', claim: 'Funded over $60M in public goods for Web3 developers', rating: 'Verified', score: 85, summary: "Gitcoin's extensive documentation substantiates its role as a leading public goods funding platform. The $60M claim aligns with verifiable onchain funding rounds.", category: 'Public Goods' },
+  { project: 'KlimaDAO', claim: 'Retired over 25 million tonnes of carbon credits', rating: 'Verified', score: 75, summary: 'KlimaDAO demonstrates credible infrastructure for transparent carbon markets. Ongoing monitoring of registry quality is recommended.', category: 'Climate / ReFi' },
+  { project: 'Worldcoin', claim: "Building the world's largest identity and financial network", rating: 'Verified', score: 75, summary: 'Worldcoin presents a real operational identity network with broad deployment. Claims are tempered by privacy and adoption limitations.', category: 'Identity' },
+  { project: 'CarbonZero DAO', claim: 'Offset 10 million tonnes of carbon through NFT sales', rating: 'Fraud', score: 0, summary: 'No verifiable carbon offset activity found on any public registry. Funds appear misappropriated — fraudulent impact claims confirmed.', category: 'Climate' },
+];
+
+let allVerdicts = [];
+let currentFilter = 'All';
+
+// ============================================================
+// LOAD VERDICTS
+// ============================================================
+async function loadVerdicts() {
+  const chainData = await fetchVerdictsFromChain();
+  allVerdicts = chainData && chainData.length > 0 ? chainData : SAMPLE;
+  updateStats();
+  renderHall();
+  renderHomeVerdicts();
+}
+
+function updateStats() {
+  const total = allVerdicts.length;
+  const fraud = allVerdicts.filter(v => v.rating === 'Fraud').length;
+  const verified = allVerdicts.filter(v => v.rating === 'Verified').length;
+  document.getElementById('stat-total').textContent = total || '—';
+  document.getElementById('stat-fraud').textContent = fraud || '—';
+  document.getElementById('stat-verified').textContent = verified || '—';
+}
+
+function renderHomeVerdicts() {
+  const el = document.getElementById('home-verdicts');
+  const recent = allVerdicts.slice(-3).reverse();
+  if (!recent.length) { el.innerHTML = '<div class="empty-state">No verdicts yet.</div>'; return; }
+  el.innerHTML = recent.map((v, i) => verdictRowHTML(v, i)).join('');
+}
+
+function renderHall() {
+  const el = document.getElementById('hall-verdicts');
+  const filtered = currentFilter === 'All' ? allVerdicts : allVerdicts.filter(v => v.rating === currentFilter);
+  if (!filtered.length) { el.innerHTML = '<div class="empty-state">No verdicts found.</div>'; return; }
+  el.innerHTML = [...filtered].reverse().map((v, i) => verdictRowHTML(v, i)).join('');
+}
+
+function verdictRowHTML(v, i) {
+  const r = getRating(v.rating);
+  const score = v.score !== undefined ? v.score : '?';
+  return `
+  <div class="verdict-row" onclick="showVerdict(${allVerdicts.indexOf(v)})">
+    <div class="verdict-icon" style="background:${r.bg};border:1px solid ${r.border};color:${r.color}">${r.icon}</div>
+    <div class="verdict-info">
+      <div class="verdict-name">${v.project || 'Unknown'}</div>
+      <div class="verdict-claim">${v.claim || ''}</div>
+    </div>
+    <div class="verdict-meta">
+      <span class="badge" style="background:${r.bg};border:1px solid ${r.border};color:${r.color}">${r.icon} ${v.rating}</span>
+      <span class="verdict-score" style="color:${r.color}">${score}</span>
+      <span style="color:rgba(255,255,255,0.2);font-size:16px">›</span>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// VERDICT DETAIL
+// ============================================================
+function showVerdict(idx) {
+  const v = allVerdicts[idx];
+  if (!v) return;
+  const r = getRating(v.rating);
+  const score = v.score || 0;
+  const circ = 2 * Math.PI * 36;
+  const dash = (score / 100) * circ;
+
+  document.getElementById('verdict-detail-content').innerHTML = `
+    <div class="card" style="margin-bottom:20px">
+      <div class="verdict-header">
+        <div class="score-ring-wrap">
+          <svg width="96" height="96">
+            <circle cx="48" cy="48" r="36" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+            <circle cx="48" cy="48" r="36" fill="none" stroke="${r.color}" stroke-width="6"
+              stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
+          </svg>
+          <div class="score-center">
+            <span class="score-num" style="color:${r.color}">${score}</span>
+            <span class="score-lbl">score</span>
+          </div>
+        </div>
+        <div class="verdict-meta-info">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+            <div class="verdict-detail-name">${v.project}</div>
+            <span class="badge" style="background:${r.bg};border:1px solid ${r.border};color:${r.color}">${r.icon} ${v.rating}</span>
+          </div>
+          <div class="verdict-detail-claim">"${v.claim}"</div>
+          <div class="verdict-tags">
+            ${v.category ? `<span class="verdict-tag">${v.category}</span>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-box" style="background:${r.bg};border:1px solid ${r.border}">
+      <div class="summary-label" style="color:${r.color}">⚖ AI Verdict Summary</div>
+      <div class="summary-text">${v.summary || 'No summary available.'}</div>
+    </div>
+
+    <div style="text-align:center">
+      <div class="hash-box">🔗 Stored on GenLayer · Contract ${CONTRACT_ADDRESS.slice(0,6)}...${CONTRACT_ADDRESS.slice(-4)}</div>
+    </div>
+  `;
+  showPage('verdict');
+}
+
+// ============================================================
+// FILTER
+// ============================================================
+function filterVerdicts(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.style.borderColor = 'var(--border)';
+    b.style.color = 'var(--muted)';
+    b.style.background = 'transparent';
+  });
+  btn.style.borderColor = 'var(--blue)';
+  btn.style.color = 'var(--blue)';
+  btn.style.background = 'rgba(56,189,248,0.1)';
+  renderHall();
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+let selectedCategory = '';
+function selectTag(el) {
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedCategory = el.textContent;
+}
+
+async function submitProject() {
+  const name = document.getElementById('f-name').value.trim();
+  const website = document.getElementById('f-website').value.trim();
+  const claim = document.getElementById('f-claim').value.trim();
+  if (!name || !website || !claim) { alert('Please fill in all required fields.'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Submitting to GenLayer...';
+
+  const statusEl = document.getElementById('submit-status');
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = '<div class="status-box"><div class="spinner"></div> Sending transaction to GenLayer testnet...</div>';
+
+  try {
+    const response = await fetch(RPC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0', id: 1,
+        method: 'eth_sendTransaction',
+        params: [{
+          to: CONTRACT_ADDRESS,
+          data: {
+            function: 'investigate',
+            args: [name, website, claim, selectedCategory || 'Other']
+          }
+        }]
+      })
+    });
+
+    const caseId = 'ILC-' + Math.random().toString(36).slice(2,8).toUpperCase();
+    document.getElementById('success-case-id').textContent = 'Case ID: ' + caseId;
+    document.getElementById('submit-form-card').style.display = 'none';
+    document.getElementById('submit-success').style.display = 'block';
+
+  } catch(e) {
+    statusEl.innerHTML = '<div style="color:var(--red);font-size:12px;padding:10px">⚠ Could not connect to GenLayer. Please submit directly via GenLayer Studio.</div>';
+    btn.disabled = false;
+    btn.innerHTML = 'Submit for Investigation →';
+  }
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const map = { home: 0, hall: 1, submit: 2 };
+  const navBtns = document.querySelectorAll('.nav-btn');
+  if (map[page] !== undefined) navBtns[map[page]]?.classList.add('active');
+  window.scrollTo(0, 0);
+  if (page === 'hall') loadVerdicts();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', () => {
+  loadVerdicts();
+  document.getElementById('contract-addr-display').textContent = CONTRACT_ADDRESS;
+});
+</script>
+</body>
+</html>
